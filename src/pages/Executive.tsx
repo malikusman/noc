@@ -1,0 +1,197 @@
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Send } from "lucide-react";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { AgentTypeBadge } from "@/components/shared/AgentTypeBadge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MonthlyBriefingCard } from "@/components/executive/MonthlyBriefingCard";
+import { CauseBarChart } from "@/components/charts/CauseBarChart";
+import { predictiveRisk, ddosWeekTimeline, quickQuestions } from "@/data/executive";
+import { MetricBar } from "@/components/shared/MetricBar";
+import { cn } from "@/lib/utils";
+
+type AnswerKey = (typeof quickQuestions)[number];
+
+export default function Executive() {
+  const [query, setQuery] = useState("");
+  const [answer, setAnswer] = useState<AnswerKey>(quickQuestions[0]);
+  const [thinking, setThinking] = useState(false);
+
+  function ask(q: AnswerKey) {
+    setQuery(q);
+    setThinking(true);
+    setTimeout(() => {
+      setAnswer(q);
+      setThinking(false);
+    }, 600);
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Executive Intelligence" />
+
+      <p className="-mt-3 max-w-3xl text-sm text-slate-500">
+        Scorpius Executive Intelligence is a <span className="font-medium text-slate-700">copilot agent</span> — a restricted LLM-based agent designed for natural language interaction with network operations data.
+      </p>
+
+      {/* Ask input */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Sparkles className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-indigo-500" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const match = quickQuestions.find((q) => q.toLowerCase() === query.trim().toLowerCase());
+                    ask(match ?? quickQuestions[0]);
+                  }
+                }}
+                placeholder={`Ask anything… e.g. "Show outages in Riyadh last week"`}
+                className="h-11 pl-9 text-base"
+              />
+            </div>
+            <Button className="h-11" onClick={() => ask(quickQuestions.find((q) => q.toLowerCase() === query.trim().toLowerCase()) ?? quickQuestions[0])}>
+              <Send className="h-4 w-4" /> Ask Scorpius
+            </Button>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {quickQuestions.map((q) => (
+              <button
+                key={q}
+                onClick={() => ask(q)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                  answer === q && !thinking
+                    ? "border-indigo-200 bg-indigo-50 text-indigo-600"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Answer area */}
+      <div className="flex items-center gap-2 text-xs text-slate-400">
+        <AgentTypeBadge type="Copilot" />
+        <span>Answering: "{answer}"</span>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {thinking ? (
+          <motion.div
+            key="thinking"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex items-center gap-2 px-2 py-8"
+          >
+            {[0, 1, 2].map((i) => (
+              <motion.span
+                key={i}
+                className="h-2.5 w-2.5 rounded-full bg-indigo-400"
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.15 }}
+              />
+            ))}
+            <span className="ml-2 text-sm text-slate-400">Scorpius is analyzing…</span>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={answer}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            {answer === "Give me a summary of last month" && <MonthlyBriefingCard />}
+
+            {answer === "What caused most incidents?" && (
+              <Card className="border-l-4 border-l-indigo-600">
+                <CardContent className="p-6">
+                  <h3 className="text-base font-semibold text-slate-900">Top incident root causes — last 30 days</h3>
+                  <p className="mb-4 text-xs text-slate-400">Generated by Scorpius Executive Intelligence (Copilot Agent)</p>
+                  <CauseBarChart />
+                  <p className="mt-3 text-sm text-slate-600">
+                    Power failures and fiber cuts remain the dominant root causes, together accounting for over half of all incidents. Configuration drift is trending up and is a strong candidate for autonomous remediation.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {answer === "Which sites are at risk next month?" && (
+              <Card className="border-l-4 border-l-indigo-600">
+                <CardContent className="p-6">
+                  <h3 className="text-base font-semibold text-slate-900">Predictive site risk — next 30 days</h3>
+                  <p className="mb-4 text-xs text-slate-400">Generated by Scorpius Executive Intelligence (Copilot Agent)</p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
+                          <th className="py-2 pr-3">Site</th>
+                          <th className="px-3 py-2">Region</th>
+                          <th className="px-3 py-2">Risk Score</th>
+                          <th className="px-3 py-2">Primary Risk Factor</th>
+                          <th className="px-3 py-2">Recommended Action</th>
+                          <th className="px-3 py-2 text-right">Confidence</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {predictiveRisk.map((r) => (
+                          <tr key={r.siteId} className="border-b border-slate-100">
+                            <td className="py-2.5 pr-3 font-mono text-xs font-medium text-slate-900">{r.siteId}</td>
+                            <td className="px-3 py-2.5 text-slate-500">{r.region}</td>
+                            <td className="px-3 py-2.5">
+                              <div className="flex items-center gap-2">
+                                <MetricBar value={r.riskScore} colorForValue className="w-16" />
+                                <span className="text-xs font-semibold text-slate-700">{r.riskScore}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2.5 text-slate-600">{r.factor}</td>
+                            <td className="px-3 py-2.5 text-slate-600">{r.action}</td>
+                            <td className="px-3 py-2.5 text-right font-medium text-indigo-600">{r.confidence}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {answer === "Show DDoS incidents this week" && (
+              <Card className="border-l-4 border-l-indigo-600">
+                <CardContent className="p-6">
+                  <h3 className="text-base font-semibold text-slate-900">DDoS & security incidents — this week</h3>
+                  <p className="mb-4 text-xs text-slate-400">Generated by Scorpius Executive Intelligence (Copilot Agent)</p>
+                  <div className="relative space-y-4 pl-6">
+                    <div className="absolute left-2 top-1 h-full w-px bg-slate-200" />
+                    {ddosWeekTimeline.map((d, i) => (
+                      <div key={i} className="relative">
+                        <span className="absolute -left-[18px] top-1 h-3 w-3 rounded-full border-2 border-white bg-indigo-500" />
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs text-slate-400">{d.time}</span>
+                          <span className="text-sm text-slate-700">{d.event}</span>
+                          <Badge variant="success" className="scale-90">{d.status}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

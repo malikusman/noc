@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 const accentMap = {
-  indigo: { text: "text-indigo-600", bg: "bg-indigo-50", ring: "text-indigo-600" },
-  red: { text: "text-red-600", bg: "bg-red-50", ring: "text-red-600" },
-  amber: { text: "text-amber-600", bg: "bg-amber-50", ring: "text-amber-600" },
-  emerald: { text: "text-emerald-600", bg: "bg-emerald-50", ring: "text-emerald-600" },
-  blue: { text: "text-blue-600", bg: "bg-blue-50", ring: "text-blue-600" },
-  violet: { text: "text-violet-600", bg: "bg-violet-50", ring: "text-violet-600" },
+  indigo: { text: "text-indigo-600", bg: "bg-indigo-50", bar: "bg-indigo-500" },
+  red: { text: "text-red-600", bg: "bg-red-50", bar: "bg-red-500" },
+  amber: { text: "text-amber-600", bg: "bg-amber-50", bar: "bg-amber-500" },
+  emerald: { text: "text-emerald-600", bg: "bg-emerald-50", bar: "bg-emerald-500" },
+  blue: { text: "text-blue-600", bg: "bg-blue-50", bar: "bg-blue-500" },
+  violet: { text: "text-violet-600", bg: "bg-violet-50", bar: "bg-violet-500" },
 };
 
 export type Accent = keyof typeof accentMap;
@@ -75,13 +75,15 @@ export function KpiCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.08 }}
     >
-      <Card className="p-5">
+      <Card className="relative overflow-hidden p-5 transition-shadow hover:shadow-md">
+        {/* accent stripe */}
+        <div className={cn("absolute inset-x-0 top-0 h-1", a.bar)} />
         <div className="flex items-start justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
               {label}
             </p>
-            <p className={cn("mt-2 text-3xl font-semibold", a.text)}>
+            <p className={cn("mt-2 text-3xl font-semibold tabular-nums tracking-tight", a.text)}>
               {prefix}
               {display}
               {suffix}
@@ -89,7 +91,7 @@ export function KpiCard({
             {sub && <p className="mt-1 text-xs text-slate-500">{sub}</p>}
           </div>
           {Icon && (
-            <div className={cn("rounded-lg p-2", a.bg)}>
+            <div className={cn("shrink-0 rounded-lg p-2", a.bg)}>
               <Icon className={cn("h-5 w-5", a.text)} />
             </div>
           )}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Search, Bell, Loader2, Activity } from "lucide-react";
+import { Search, Bell, Loader2, Activity, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ function useClock() {
   return now;
 }
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const location = useLocation();
   const now = useClock();
   const [diagRunning, setDiagRunning] = useState(false);
@@ -57,28 +57,36 @@ export function Header() {
   }
 
   return (
-    <header className="fixed inset-x-0 left-[220px] top-0 z-20 flex h-14 items-center gap-4 border-b border-slate-200 bg-white px-6">
-      {/* Left: title + breadcrumb */}
-      <div className="min-w-[180px]">
-        <h2 className="text-sm font-semibold text-slate-900">{meta.title}</h2>
-        <p className="text-[11px] text-slate-400">{meta.crumb}</p>
+    <header className="fixed inset-x-0 left-0 top-0 z-20 flex h-14 items-center gap-3 border-b border-slate-200 bg-white px-3 md:left-[220px] md:gap-4 md:px-6">
+      {/* Hamburger — mobile only */}
+      <button
+        className="flex shrink-0 items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:hidden"
+        onClick={onMenuClick}
+        aria-label="Open menu"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      {/* Title */}
+      <div className="min-w-0 flex-1 md:flex-none">
+        <h2 className="truncate text-sm font-semibold text-slate-900">{meta.title}</h2>
+        <p className="hidden text-[11px] text-slate-400 sm:block">{meta.crumb}</p>
       </div>
 
-      {/* Center: search */}
+      {/* Search — hidden on mobile */}
       <div className="relative mx-auto hidden w-full max-w-md md:block">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <Input
           placeholder="Search sites, incidents, agents…"
           className="pl-9"
           onKeyDown={(e) => {
-            if (e.key === "Enter")
-              toast("Search is mocked in this demo build");
+            if (e.key === "Enter") toast("Search is mocked in this demo build");
           }}
         />
       </div>
 
-      {/* Right */}
-      <div className="ml-auto flex items-center gap-4">
+      {/* Right actions */}
+      <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-4">
         <div className="hidden text-right lg:block">
           <p className="font-mono text-xs text-slate-600">{utc} UTC</p>
           <p className="text-[10px] text-slate-400">Last sync: {syncLabel}</p>
@@ -91,13 +99,14 @@ export function Header() {
           </span>
         </button>
 
-        <Button size="sm" onClick={runDiagnostics} disabled={diagRunning}>
+        <Button size="sm" onClick={runDiagnostics} disabled={diagRunning} className="hidden sm:flex">
           {diagRunning ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Activity className="h-4 w-4" />
           )}
-          {diagRunning ? "Running…" : "Run Full Diagnostics"}
+          <span className="hidden md:inline">{diagRunning ? "Running…" : "Run Full Diagnostics"}</span>
+          <span className="md:hidden">{diagRunning ? "Running…" : "Diagnostics"}</span>
         </Button>
       </div>
     </header>

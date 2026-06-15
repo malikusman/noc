@@ -31,62 +31,71 @@ export default function Incidents() {
 
       <CorrelationFlowBanner />
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Incident ID</TableHead>
-              <TableHead>Root Cause</TableHead>
-              <TableHead>Severity</TableHead>
-              <TableHead className="text-right">Sites</TableHead>
-              <TableHead className="text-right">Alarms ↓</TableHead>
-              <TableHead className="text-right">Subscribers</TableHead>
-              <TableHead className="text-right">Revenue Risk</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {incidents.map((inc) => {
-              const isOpen = openId === inc.id;
-              return (
-                <Fragment key={inc.id}>
-                  <TableRow className={cn(isOpen && "bg-indigo-50/40")}>
-                    <TableCell className="font-mono text-xs font-medium text-slate-900">{inc.id}</TableCell>
-                    <TableCell className="text-sm">{inc.rootCause}</TableCell>
-                    <TableCell><StatusBadge status={inc.severity} /></TableCell>
-                    <TableCell className="text-right text-sm">{inc.sitesAffected}</TableCell>
-                    <TableCell className="text-right">
-                      <span className="font-mono text-xs text-slate-500">{inc.rawAlarmsCount} → 1</span>
-                    </TableCell>
-                    <TableCell className="text-right text-sm">{formatNumber(inc.subscribersImpacted)}</TableCell>
-                    <TableCell className="text-right text-sm">
-                      {inc.revenueRisk ? `${formatCurrency(inc.revenueRisk)}/day` : "—"}
-                    </TableCell>
-                    <TableCell><StatusBadge status={inc.status} /></TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant={isOpen ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setOpenId(isOpen ? null : inc.id)}
-                      >
-                        Analyze
-                        <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={9} className="p-0">
-                      <AnimatePresence initial={false}>
-                        {isOpen && <IncidentDetailPanel incident={inc} />}
-                      </AnimatePresence>
-                    </TableCell>
-                  </TableRow>
-                </Fragment>
-              );
-            })}
-          </TableBody>
-        </Table>
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Incident ID</TableHead>
+                <TableHead className="hidden sm:table-cell">Root Cause</TableHead>
+                <TableHead>Severity</TableHead>
+                <TableHead className="hidden md:table-cell text-right">Sites</TableHead>
+                <TableHead className="hidden md:table-cell text-right">Alarms ↓</TableHead>
+                <TableHead className="hidden lg:table-cell text-right">Subscribers</TableHead>
+                <TableHead className="hidden lg:table-cell text-right">Revenue Risk</TableHead>
+                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {incidents.map((inc) => {
+                const isOpen = openId === inc.id;
+                return (
+                  <Fragment key={inc.id}>
+                    <TableRow className={cn(isOpen && "bg-indigo-50/40")}>
+                      <TableCell className="font-mono text-xs font-medium text-slate-900">
+                        {inc.id}
+                        {/* On mobile, show severity + status inline */}
+                        <div className="mt-1 flex items-center gap-1.5 sm:hidden">
+                          <StatusBadge status={inc.severity} />
+                          <StatusBadge status={inc.status} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm">{inc.rootCause}</TableCell>
+                      <TableCell className="hidden sm:table-cell"><StatusBadge status={inc.severity} /></TableCell>
+                      <TableCell className="hidden md:table-cell text-right text-sm">{inc.sitesAffected}</TableCell>
+                      <TableCell className="hidden md:table-cell text-right">
+                        <span className="font-mono text-xs text-slate-500">{inc.rawAlarmsCount} → 1</span>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-right text-sm">{formatNumber(inc.subscribersImpacted)}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-right text-sm">
+                        {inc.revenueRisk ? `${formatCurrency(inc.revenueRisk)}/day` : "—"}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell"><StatusBadge status={inc.status} /></TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant={isOpen ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setOpenId(isOpen ? null : inc.id)}
+                        >
+                          Analyze
+                          <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={9} className="p-0">
+                        <AnimatePresence initial={false}>
+                          {isOpen && <IncidentDetailPanel incident={inc} />}
+                        </AnimatePresence>
+                      </TableCell>
+                    </TableRow>
+                  </Fragment>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
 
       <PlannedVsUnplannedCard />

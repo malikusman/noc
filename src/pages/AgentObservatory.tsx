@@ -86,33 +86,37 @@ export default function AgentObservatory() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden rounded-b-xl bg-slate-900">
-            <div className="grid grid-cols-12 gap-2 border-b border-slate-800 px-4 py-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-              <span className="col-span-2">Timestamp</span>
-              <span className="col-span-2">From</span>
-              <span className="col-span-2">To</span>
-              <span className="col-span-2">Type</span>
-              <span className="col-span-2">Goal</span>
-              <span className="col-span-1">State</span>
-              <span className="col-span-1 text-right">Latency</span>
-            </div>
-            <div className="max-h-80 overflow-y-auto scrollbar-dark font-mono text-[11px]">
-              {a2aCommLog.map((m, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: Math.min(i * 0.02, 0.4) }}
-                  className="grid grid-cols-12 items-center gap-2 border-b border-slate-800/60 px-4 py-1.5 last:border-0"
-                >
-                  <span className="col-span-2 text-slate-500">{format(new Date(m.timestamp), "HH:mm:ss")}</span>
-                  <span className="col-span-2 text-sky-400">{m.fromAgent}</span>
-                  <span className="col-span-2 text-violet-400">{m.toAgent}</span>
-                  <span className={`col-span-2 ${msgTypeTone[m.messageType] ?? "text-slate-300"}`}>{m.messageType}</span>
-                  <span className="col-span-2 truncate text-slate-300">{m.goal}</span>
-                  <span className="col-span-1 truncate text-emerald-400">{m.state}</span>
-                  <span className="col-span-1 text-right text-slate-500">{m.latencyMs}ms</span>
-                </motion.div>
-              ))}
+            <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+                <div className="grid grid-cols-12 gap-2 border-b border-slate-800 px-4 py-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                  <span className="col-span-2">Timestamp</span>
+                  <span className="col-span-2">From</span>
+                  <span className="col-span-2">To</span>
+                  <span className="col-span-2">Type</span>
+                  <span className="col-span-2">Goal</span>
+                  <span className="col-span-1">State</span>
+                  <span className="col-span-1 text-right">Latency</span>
+                </div>
+                <div className="max-h-80 overflow-y-auto scrollbar-dark font-mono text-[11px]">
+                  {a2aCommLog.map((m, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: Math.min(i * 0.02, 0.4) }}
+                      className="grid grid-cols-12 items-center gap-2 border-b border-slate-800/60 px-4 py-1.5 last:border-0"
+                    >
+                      <span className="col-span-2 text-slate-500">{format(new Date(m.timestamp), "HH:mm:ss")}</span>
+                      <span className="col-span-2 text-sky-400">{m.fromAgent}</span>
+                      <span className="col-span-2 text-violet-400">{m.toAgent}</span>
+                      <span className={`col-span-2 ${msgTypeTone[m.messageType] ?? "text-slate-300"}`}>{m.messageType}</span>
+                      <span className="col-span-2 truncate text-slate-300">{m.goal}</span>
+                      <span className="col-span-1 truncate text-emerald-400">{m.state}</span>
+                      <span className="col-span-1 text-right text-slate-500">{m.latencyMs}ms</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>

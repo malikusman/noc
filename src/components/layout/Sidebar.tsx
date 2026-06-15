@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   TrendingDown,
   Link2,
@@ -11,6 +11,7 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,16 +37,19 @@ function NavItem({
   label,
   icon: Icon,
   end,
+  onClose,
 }: {
   to: string;
   label: string;
   icon: typeof Home;
   end?: boolean;
+  onClose?: () => void;
 }) {
   return (
     <NavLink
       to={to}
       end={end}
+      onClick={onClose}
       className={({ isActive }) =>
         cn(
           "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
@@ -61,20 +65,32 @@ function NavItem({
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 flex w-[220px] flex-col border-r border-slate-200 bg-white">
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-30 flex w-[220px] flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out",
+        open ? "translate-x-0" : "-translate-x-full",
+        "md:translate-x-0"
+      )}
+    >
       {/* Brand */}
       <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600">
           <Shield className="h-4 w-4 text-white" />
         </div>
-        <div className="leading-tight">
+        <div className="flex-1 leading-tight">
           <p className="text-sm font-semibold text-slate-900">Scorpius</p>
-          <p className="text-[10px] uppercase tracking-wide text-slate-400">
-            Networks
-          </p>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400">Networks</p>
         </div>
+        {/* Close button — mobile only */}
+        <button
+          className="flex items-center justify-center rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 md:hidden"
+          onClick={onClose}
+          aria-label="Close menu"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Nav */}
@@ -83,7 +99,7 @@ export function Sidebar() {
           Intelligence
         </p>
         {intelligence.map((i) => (
-          <NavItem key={i.to} {...i} />
+          <NavItem key={i.to} {...i} onClose={onClose} />
         ))}
 
         <div className="my-3 border-t border-slate-100" />
@@ -92,7 +108,7 @@ export function Sidebar() {
           Operations
         </p>
         {operations.map((i) => (
-          <NavItem key={i.to} {...i} />
+          <NavItem key={i.to} {...i} onClose={onClose} />
         ))}
       </nav>
 
@@ -107,11 +123,11 @@ export function Sidebar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
             AR
           </div>
-          <div className="leading-tight">
-            <p className="text-xs font-medium text-slate-900">Ahmed Al-Rashid</p>
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-xs font-medium text-slate-900">Ahmed Al-Rashid</p>
             <p className="text-[10px] text-slate-400">NOC Lead</p>
           </div>
         </div>

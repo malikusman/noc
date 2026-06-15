@@ -68,37 +68,42 @@ export default function Security() {
         {/* Left 65% */}
         <div className="space-y-6 lg:col-span-8">
           {/* Threat table */}
-          <Card>
+          <Card className="overflow-hidden">
             <CardHeader><CardTitle>Active & Recent Threats</CardTitle></CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Threat ID</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Targets</TableHead>
-                    <TableHead>Severity</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {securityThreats.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell className="font-mono text-xs font-medium text-slate-900">{t.id}</TableCell>
-                      <TableCell><Badge variant="secondary">{t.type}</Badge></TableCell>
-                      <TableCell className="text-xs text-slate-500">{t.source}</TableCell>
-                      <TableCell className="font-mono text-xs text-slate-500">{t.targetSites.join(", ")}</TableCell>
-                      <TableCell><StatusBadge status={t.severity} /></TableCell>
-                      <TableCell><StatusBadge status={t.status} /></TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => toast(`Threat ${t.id} details (mocked)`)}>View</Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Threat ID</TableHead>
+                      <TableHead className="hidden sm:table-cell">Type</TableHead>
+                      <TableHead className="hidden md:table-cell">Source</TableHead>
+                      <TableHead className="hidden md:table-cell">Targets</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead className="hidden sm:table-cell">Status</TableHead>
+                      <TableHead></TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {securityThreats.map((t) => (
+                      <TableRow key={t.id}>
+                        <TableCell className="font-mono text-xs font-medium text-slate-900">
+                          {t.id}
+                          <div className="mt-1 sm:hidden"><StatusBadge status={t.status} /></div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell"><Badge variant="secondary">{t.type}</Badge></TableCell>
+                        <TableCell className="hidden md:table-cell text-xs text-slate-500">{t.source}</TableCell>
+                        <TableCell className="hidden md:table-cell font-mono text-xs text-slate-500">{t.targetSites.join(", ")}</TableCell>
+                        <TableCell><StatusBadge status={t.severity} /></TableCell>
+                        <TableCell className="hidden sm:table-cell"><StatusBadge status={t.status} /></TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" onClick={() => toast(`Threat ${t.id} details (mocked)`)}>View</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
 
